@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 610" role="img" aria-labelledby="title desc">
+  <title id="title">Happy cartoon pizza</title><desc id="desc">A bright golden cartoon pizza with pepperoni, basil and stretchy mozzarella.</desc>
+  <defs>
+    <linearGradient id="crust" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#ffd66a"/><stop offset=".52" stop-color="#f7a934"/><stop offset="1" stop-color="#d75b25"/></linearGradient>
+    <linearGradient id="cheese" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="#fff39a"/><stop offset="1" stop-color="#ffc744"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.7"><feGaussianBlur stdDeviation="13"/></filter>
+  </defs>
+  <ellipse cx="385" cy="518" rx="270" ry="37" fill="#07080c" opacity=".42" filter="url(#shadow)"/>
+  <!-- puffy crust underside -->
+  <path d="M82 305C77 196 202 112 361 113c157 1 296 69 316 166 21 99-105 167-267 176C238 464 89 407 82 305Z" fill="#a63e23" stroke="#17151b" stroke-width="19" stroke-linejoin="round"/>
+  <path d="M82 287C76 181 201 99 361 101c160 1 296 67 316 163 21 96-105 163-267 173C238 447 89 392 82 287Z" fill="url(#crust)" stroke="#17151b" stroke-width="19" stroke-linejoin="round"/>
+  <!-- cartoon toasted crust freckles -->
+  <path d="M125 254c15-38 52-76 91-96m-32 202c27 18 64 30 94 34m186 21c48-8 93-23 125-47M502 148c37 18 68 43 86 72" fill="none" stroke="#c75d26" stroke-width="15" stroke-linecap="round" opacity=".65"/>
+  <path d="M112 282C111 195 222 132 359 133c135 1 252 56 273 135 21 81-91 137-229 148-142 11-283-43-291-134Z" fill="url(#cheese)" stroke="#17151b" stroke-width="13" stroke-linejoin="round"/>
+  <!-- melted cheese drips -->
+  <path d="M165 372c7 30 9 62 32 69 24 7 34-18 29-49m63 59c-2 23 8 45 27 45 24 0 27-24 20-56m81 45c-4 24 7 43 27 41 24-2 26-24 19-53m63-35c1 25 16 38 33 31 15-7 12-24 7-41" fill="#ffd34f" stroke="#17151b" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- pepperoni -->
+  <g fill="#ef573b" stroke="#8e2d25" stroke-width="8">
+    <ellipse cx="218" cy="226" rx="36" ry="27" transform="rotate(-19 218 226)"/><ellipse cx="331" cy="180" rx="33" ry="25" transform="rotate(8 331 180)"/><ellipse cx="476" cy="202" rx="37" ry="27" transform="rotate(17 476 202)"/><ellipse cx="562" cy="280" rx="34" ry="26" transform="rotate(-15 562 280)"/><ellipse cx="447" cy="308" rx="39" ry="28" transform="rotate(-8 447 308)"/><ellipse cx="292" cy="315" rx="35" ry="26" transform="rotate(17 292 315)"/><ellipse cx="168" cy="302" rx="31" ry="24" transform="rotate(7 168 302)"/>
+  </g>
+  <g fill="#ff9a6d" opacity=".8"><circle cx="208" cy="219" r="6"/><circle cx="325" cy="174" r="6"/><circle cx="467" cy="196" r="6"/><circle cx="552" cy="273" r="6"/><circle cx="438" cy="300" r="6"/><circle cx="283" cy="308" r="6"/></g>
+  <!-- basil leaves -->
+  <g fill="#64a94b" stroke="#285d37" stroke-width="7" stroke-linejoin="round">
+    <path d="M264 248c-39-36-48-3-10 20 19 12 32 10 43 3-6-9-15-17-33-23Z"/><path d="M390 230c16-47 44-24 19 10-13 17-27 22-39 19 2-11 7-21 20-29Z"/><path d="M516 334c38-35 49-3 11 20-19 12-32 11-43 4 6-9 14-18 32-24Z"/><path d="M222 348c-4-44 30-44 30-4-1 20-9 31-20 37-6-9-10-19-10-33Z"/>
+  </g>
+  <g stroke="#2e6b3b" stroke-width="4" stroke-linecap="round" fill="none"><path d="m264 254 28 15m84-20 25-18m106 104 31-15m-277 28-3 24"/></g>
+  <!-- little face for the playful cartoon finish -->
+  <ellipse cx="353" cy="250" rx="9" ry="13" fill="#25202a"/><ellipse cx="390" cy="248" rx="9" ry="13" fill="#25202a"/>
+  <path d="M355 276q17 19 34-1" fill="none" stroke="#25202a" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="333" cy="267" rx="10" ry="5" fill="#f27b75" opacity=".7"/><ellipse cx="410" cy="265" rx="10" ry="5" fill="#f27b75" opacity=".7"/>
+  <!-- highlights and sparkle -->
+  <path d="M146 232c20-34 51-55 82-65m254 7c26 7 48 18 66 33" fill="none" stroke="#fff3c2" stroke-width="9" stroke-linecap="round" opacity=".85"/>
+  <path d="m615 105 9 20 20 9-20 8-9 21-8-21-21-8 21-9 8-20Z" fill="#8ce1a9" stroke="#17151b" stroke-width="6" stroke-linejoin="round"/>
+</svg>

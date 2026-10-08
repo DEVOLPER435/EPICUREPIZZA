@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 100" role="img" aria-label="Epicure pizza chef mascot">
+  <path d="M17 45c-10-14 3-25 15-21 0-16 29-20 34-2 14-2 22 12 12 24l-4 10H23l-6-11Z" fill="#fff8e8" stroke="#17151b" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M25 51h43l8 36c-17 10-47 10-64 0l13-36Z" fill="#f5b334" stroke="#17151b" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m25 59 46 22M68 58 34 82" stroke="#df4b34" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="42" cy="64" rx="3.3" ry="5" fill="#17151b"/><ellipse cx="57" cy="64" rx="3.3" ry="5" fill="#17151b"/>
+  <path d="M43 73q7 8 14 0" fill="none" stroke="#17151b" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M37 89h27" stroke="#fff8e8" stroke-width="4" stroke-linecap="round"/>
+</svg>
