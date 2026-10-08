@@ -7,6 +7,8 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const currency = new Intl.NumberFormat(RESTAURANT.locale, { style: "currency", currency: RESTAURANT.currency });
 let products = [], categories = ["Everything"], activeCategory = "all", cart = readCart(), session = null, profile = null, authMode = "signin", adminTab = "orders", toastTimer, deliveryFee = 0;
+let heroSlide = 0;
+const heroLabels = ["A big cartoon pizza with pepperoni, basil, and stretchy cheese", "Pepperoni pizza, cartoon style", "Garden veggie pizza, cartoon style", "Extra cheesy pizza, cartoon style", "Spicy pizza, cartoon style", "BBQ pizza, cartoon style"];
 
 function readCart() {
   try {
@@ -24,7 +26,7 @@ function closeDialog(id) { document.getElementById(id)?.close(); }
 function initials(name = "Pizza") { return name.split(/\s+/).map(part => part[0]).slice(0, 2).join("").toUpperCase(); }
 
 function setRestaurantInfo() {
-  document.title = `${RESTAURANT.name} — A slice above`;
+  document.title = `${RESTAURANT.name} — Pizza Paradise`;
   $("#restaurantAddress").textContent = RESTAURANT.address;
   $("#openingHours").textContent = RESTAURANT.hours;
   if (RESTAURANT.phone) { $("#restaurantPhone").textContent = RESTAURANT.phone; $("#restaurantPhone").href = `tel:${RESTAURANT.phone.replace(/[^+\d]/g, "")}`; }
@@ -52,7 +54,18 @@ function renderCategories() {
 function renderMenu() {
   const search = $("#menuSearch").value.trim().toLowerCase();
   const visible = products.filter(product => product.is_available && (activeCategory === "all" || product.category === activeCategory) && `${product.name} ${product.description || ""} ${product.category}`.toLowerCase().includes(search));
-  $("#menuGrid").innerHTML = visible.length ? visible.map((product, index) => `<article class="dish"><div class="dish-art art-${index % 4}">${product.image_url ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy">` : `<div class="pie"><i>✦</i><i>✦</i><i>✦</i></div>`}<span class="dish-category">${escapeHtml(product.category)}</span></div><div class="dish-info"><div class="dish-title"><h3>${escapeHtml(product.name)}</h3><b>${money(product.price)}</b></div><p>${escapeHtml(product.description || "Made fresh, just for you.")}</p><button class="add-button" data-add="${product.id}">Add to bag <span>＋</span></button></div></article>`).join("") : `<div class="empty-state"><h3>No slices found.</h3><p>Try another search or category.</p></div>`;
+  $("#menuGrid").innerHTML = visible.length ? visible.map((product, index) => `<article class="dish"><div class="dish-art art-${index % 4}">${product.image_url ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy">` : `<img class="pizza-product" src="assets/pizza-cartoon.svg" alt="${escapeHtml(product.name)}" loading="lazy">`}<span class="dish-category">${escapeHtml(product.category)}</span></div><div class="dish-info"><div class="dish-title"><h3>${escapeHtml(product.name)}</h3><b>${money(product.price)}</b></div><p>${escapeHtml(product.description || "Made fresh, just for you.")}</p><button class="add-button" data-add="${product.id}">Add to bag <span>＋</span></button></div></article>`).join("") : `<div class="empty-state"><h3>No slices found.</h3><p>Try another search or category.</p></div>`;
+}
+function selectHeroSlide(index) {
+  heroSlide = (index + 6) % 6;
+  const image = $("#heroPizza");
+  image.className = `hero-pizza variant-${heroSlide}`;
+  image.alt = heroLabels[heroSlide];
+  $$("[data-pizza-slide]").forEach(button => {
+    const active = Number(button.dataset.pizzaSlide) === heroSlide;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 async function loadMenu() {
   if (!supabase) { $("#menuGrid").innerHTML = `<div class="setup-state"><b>One quick setup step</b><p>Add your Supabase URL and public anon key in <code>config.js</code>, then apply <code>supabase.sql</code> to load and manage the menu.</p></div>`; return; }
@@ -147,6 +160,8 @@ async function deleteProduct(id) { if (!confirm("Remove this menu item? Existing
 async function setRole(userId, role) { const { error } = await supabase.rpc("set_user_role", { p_user_id: userId, p_role: role }); if (error) showToast(error.message); else { showToast("Team role updated."); await loadAdmin(); } }
 
 document.addEventListener("click", async event => {
+  const slideButton = event.target.closest("[data-pizza-slide]"); if (slideButton) selectHeroSlide(Number(slideButton.dataset.pizzaSlide));
+  const galleryStep = event.target.closest("[data-gallery-step]"); if (galleryStep) selectHeroSlide(heroSlide + Number(galleryStep.dataset.galleryStep));
   const category = event.target.closest("[data-category]"); if (category) { activeCategory = category.dataset.category; renderCategories(); renderMenu(); }
   const add = event.target.closest("[data-add]"); if (add) { const product = products.find(item => item.id === add.dataset.add); const line = cart.find(item => item.id === product.id); if (line) line.quantity++; else cart.push({ id: product.id, name: product.name, price: Number(product.price), quantity: 1 }); saveCart(); showToast(`${product.name} added to your bag.`); }
   const quantity = event.target.closest("[data-qty]"); if (quantity) { const item = cart.find(line => line.id === quantity.dataset.qty); item.quantity += Number(quantity.dataset.delta); if (item.quantity <= 0) cart = cart.filter(line => line.id !== item.id); saveCart(); updateBag(); }
@@ -175,6 +190,7 @@ $("#adminContent").addEventListener("submit", event => { if (event.target.id ===
 for (const dialog of $$("dialog")) dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
 
 setRestaurantInfo(); updateBag();
+selectHeroSlide(0);
 if (configured) {
   const { data } = await supabase.auth.getSession(); session = data.session;
   await refreshProfile();
