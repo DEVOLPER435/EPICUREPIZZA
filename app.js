@@ -8,7 +8,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const currency = new Intl.NumberFormat(RESTAURANT.locale, { style: "currency", currency: RESTAURANT.currency });
 let products = [], categories = ["Everything"], activeCategory = "all", cart = readCart(), session = null, profile = null, authMode = "signin", adminTab = "orders", toastTimer, deliveryFee = 0;
 let heroSlide = 0;
-const heroLabels = ["A big cartoon pizza with pepperoni, basil, and stretchy cheese", "Pepperoni pizza, cartoon style", "Garden veggie pizza, cartoon style", "Extra cheesy pizza, cartoon style", "Spicy pizza, cartoon style", "BBQ pizza, cartoon style"];
+const heroLabels = ["Freshly baked pizza with melted cheese", "Pepperoni pizza", "Freshly baked pizza", "Cheese pizza", "Fresh pizza from the oven", "Pizza with melted mozzarella"];
 
 function readCart() {
   try {
@@ -17,14 +17,12 @@ function readCart() {
     return saved.filter(item => item && typeof item.id === "string" && /^[0-9a-f-]{36}$/i.test(item.id) && typeof item.name === "string" && Number.isFinite(Number(item.price)) && Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 0).slice(0, 50).map(item => ({ id: item.id, name: item.name, price: Number(item.price), quantity: Number(item.quantity) }));
   } catch { return []; }
 }
-function saveCart() { localStorage.setItem("epicure-cart", JSON.stringify(cart)); updateBag(); }
+function saveCart() { localStorage.setItem("epicure-cart", JSON.stringify(cart)); updateCart(); }
 function money(value) { return currency.format(Number(value || 0)); }
 function showToast(message) { const node = $("#toast"); node.textContent = message; node.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => node.classList.remove("show"), 2800); }
 function setMessage(selector, message, error = false) { const node = $(selector); if (node) { node.textContent = message; node.classList.toggle("error", error); } }
 function openDialog(id) { const dialog = document.getElementById(id); if (!dialog.open) dialog.showModal(); }
 function closeDialog(id) { document.getElementById(id)?.close(); }
-function initials(name = "Pizza") { return name.split(/\s+/).map(part => part[0]).slice(0, 2).join("").toUpperCase(); }
-
 function setRestaurantInfo() {
   document.title = `${RESTAURANT.name} — Pizza Paradise`;
   $("#restaurantAddress").textContent = RESTAURANT.address;
@@ -32,10 +30,10 @@ function setRestaurantInfo() {
   if (RESTAURANT.phone) { $("#restaurantPhone").textContent = RESTAURANT.phone; $("#restaurantPhone").href = `tel:${RESTAURANT.phone.replace(/[^+\d]/g, "")}`; }
   $("#year").textContent = new Date().getFullYear();
 }
-function updateBag() {
+function updateCart() {
   const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-  $("#bagCount").textContent = count;
-  $("#cartContents").innerHTML = count ? `<div class="cart-lines">${cart.map(item => `<div class="cart-line"><div class="mini-pie">${escapeHtml(initials(item.name))}</div><div class="cart-item-name"><b>${escapeHtml(item.name)}</b><small>${money(item.price)} each</small></div><div class="quantity"><button data-qty="${escapeHtml(item.id)}" data-delta="-1" aria-label="Remove one">−</button><span>${item.quantity}</span><button data-qty="${escapeHtml(item.id)}" data-delta="1" aria-label="Add one">+</button></div><b>${money(item.price * item.quantity)}</b></div>`).join("")}</div><div class="cart-subtotal"><span>Subtotal</span><b>${money(cart.reduce((sum, item) => sum + item.price * item.quantity, 0))}</b></div>` : `<div class="empty-state"><span>🍕</span><h3>Your bag is taking a little nap.</h3><p>Add a favourite and we’ll get the oven going.</p><button class="button primary" data-close="cartDialog">See the menu</button></div>`;
+  $("#cartCount").textContent = count;
+  $("#cartContents").innerHTML = count ? `<div class="cart-lines">${cart.map(item => `<div class="cart-line"><img class="cart-product-image" src="assets/pizza-thumb-1.jpg" alt=""><div class="cart-item-name"><b>${escapeHtml(item.name)}</b><small>${money(item.price)} each</small></div><div class="quantity"><button data-qty="${escapeHtml(item.id)}" data-delta="-1" aria-label="Remove one">−</button><span>${item.quantity}</span><button data-qty="${escapeHtml(item.id)}" data-delta="1" aria-label="Add one">+</button></div><b>${money(item.price * item.quantity)}</b></div>`).join("")}</div><div class="cart-subtotal"><span>Subtotal</span><b>${money(cart.reduce((sum, item) => sum + item.price * item.quantity, 0))}</b></div>` : `<div class="empty-state"><h3>Your cart is empty.</h3><p>Add a pizza to get started.</p><button class="button primary" data-close="cartDialog">View Menu</button></div>`;
   const hasItems = count > 0;
   $("#checkoutForm").classList.toggle("hidden", !hasItems);
   const fulfillment = new FormData($("#checkoutForm")).get("fulfillment") || "pickup";
@@ -54,12 +52,12 @@ function renderCategories() {
 function renderMenu() {
   const search = $("#menuSearch").value.trim().toLowerCase();
   const visible = products.filter(product => product.is_available && (activeCategory === "all" || product.category === activeCategory) && `${product.name} ${product.description || ""} ${product.category}`.toLowerCase().includes(search));
-  $("#menuGrid").innerHTML = visible.length ? visible.map((product, index) => `<article class="dish"><div class="dish-art art-${index % 4}">${product.image_url ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy">` : `<img class="pizza-product" src="assets/pizza-cartoon.svg" alt="${escapeHtml(product.name)}" loading="lazy">`}<span class="dish-category">${escapeHtml(product.category)}</span></div><div class="dish-info"><div class="dish-title"><h3>${escapeHtml(product.name)}</h3><b>${money(product.price)}</b></div><p>${escapeHtml(product.description || "Made fresh, just for you.")}</p><button class="add-button" data-add="${product.id}">Add to bag <span>＋</span></button></div></article>`).join("") : `<div class="empty-state"><h3>No slices found.</h3><p>Try another search or category.</p></div>`;
+  $("#menuGrid").innerHTML = visible.length ? visible.map((product, index) => `<article class="dish"><div class="dish-art art-${index % 4}">${product.image_url ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy">` : `<img class="pizza-product" src="assets/pizza-hero.jpg" alt="${escapeHtml(product.name)}" loading="lazy">`}<span class="dish-category">${escapeHtml(product.category)}</span></div><div class="dish-info"><div class="dish-title"><h3>${escapeHtml(product.name)}</h3><b>${money(product.price)}</b></div><p>${escapeHtml(product.description || "Made fresh, just for you.")}</p><button class="add-button" data-add="${product.id}">Add to cart <span>＋</span></button></div></article>`).join("") : `<div class="empty-state"><h3>No slices found.</h3><p>Try another search or category.</p></div>`;
 }
 function selectHeroSlide(index) {
   heroSlide = (index + 6) % 6;
   const image = $("#heroPizza");
-  image.className = `hero-pizza variant-${heroSlide}`;
+  image.src = heroSlide === 0 ? "assets/pizza-hero.jpg" : `assets/pizza-thumb-${heroSlide + 1}.jpg`;
   image.alt = heroLabels[heroSlide];
   $$("[data-pizza-slide]").forEach(button => {
     const active = Number(button.dataset.pizzaSlide) === heroSlide;
@@ -154,7 +152,7 @@ async function loadAdmin() {
 }
 async function updateOrderStatus(id, status) { const { error } = await supabase.from("orders").update({ status }).eq("id", id); if (error) showToast(error.message); else { showToast("Order status updated."); loadAdmin(); } }
 async function addProduct(event) { event.preventDefault(); const data = new FormData(event.currentTarget); const record = { name: data.get("name"), category: data.get("category"), price: Number(data.get("price")), image_url: data.get("image_url") || null, description: data.get("description") || "", is_available: true }; const { error } = await supabase.from("products").insert(record); if (error) return showToast(error.message); showToast("Menu item added."); await loadAdmin(); await loadMenu(); }
-async function saveSettings(event) { event.preventDefault(); const delivery_fee = Number(new FormData(event.currentTarget).get("delivery_fee")); if (!Number.isFinite(delivery_fee) || delivery_fee < 0) return showToast("Enter a valid delivery fee."); const { error } = await supabase.from("restaurant_settings").update({ delivery_fee }).eq("id", 1); if (error) return showToast(error.message); showToast("Restaurant settings saved."); await loadMenu(); updateBag(); }
+async function saveSettings(event) { event.preventDefault(); const delivery_fee = Number(new FormData(event.currentTarget).get("delivery_fee")); if (!Number.isFinite(delivery_fee) || delivery_fee < 0) return showToast("Enter a valid delivery fee."); const { error } = await supabase.from("restaurant_settings").update({ delivery_fee }).eq("id", 1); if (error) return showToast(error.message); showToast("Restaurant settings saved."); await loadMenu(); updateCart(); }
 async function setAvailability(id, is_available) { const { error } = await supabase.from("products").update({ is_available }).eq("id", id); if (error) showToast(error.message); else { showToast("Menu availability updated."); await loadMenu(); } }
 async function deleteProduct(id) { if (!confirm("Remove this menu item? Existing orders keep their item details.")) return; const { error } = await supabase.from("products").delete().eq("id", id); if (error) showToast(error.message); else { showToast("Menu item removed."); await loadAdmin(); await loadMenu(); } }
 async function setRole(userId, role) { const { error } = await supabase.rpc("set_user_role", { p_user_id: userId, p_role: role }); if (error) showToast(error.message); else { showToast("Team role updated."); await loadAdmin(); } }
@@ -163,33 +161,34 @@ document.addEventListener("click", async event => {
   const slideButton = event.target.closest("[data-pizza-slide]"); if (slideButton) selectHeroSlide(Number(slideButton.dataset.pizzaSlide));
   const galleryStep = event.target.closest("[data-gallery-step]"); if (galleryStep) selectHeroSlide(heroSlide + Number(galleryStep.dataset.galleryStep));
   const category = event.target.closest("[data-category]"); if (category) { activeCategory = category.dataset.category; renderCategories(); renderMenu(); }
-  const add = event.target.closest("[data-add]"); if (add) { const product = products.find(item => item.id === add.dataset.add); const line = cart.find(item => item.id === product.id); if (line) line.quantity++; else cart.push({ id: product.id, name: product.name, price: Number(product.price), quantity: 1 }); saveCart(); showToast(`${product.name} added to your bag.`); }
-  const quantity = event.target.closest("[data-qty]"); if (quantity) { const item = cart.find(line => line.id === quantity.dataset.qty); item.quantity += Number(quantity.dataset.delta); if (item.quantity <= 0) cart = cart.filter(line => line.id !== item.id); saveCart(); updateBag(); }
+  const add = event.target.closest("[data-add]"); if (add) { const product = products.find(item => item.id === add.dataset.add); const line = cart.find(item => item.id === product.id); if (line) line.quantity++; else cart.push({ id: product.id, name: product.name, price: Number(product.price), quantity: 1 }); saveCart(); showToast(`${product.name} added to your cart.`); }
+  const quantity = event.target.closest("[data-qty]"); if (quantity) { const item = cart.find(line => line.id === quantity.dataset.qty); item.quantity += Number(quantity.dataset.delta); if (item.quantity <= 0) cart = cart.filter(line => line.id !== item.id); saveCart(); updateCart(); }
   const close = event.target.closest("[data-close]"); if (close) closeDialog(close.dataset.close);
   const authTab = event.target.closest("[data-auth-mode]"); if (authTab) chooseAuthMode(authTab.dataset.authMode);
   const adminTabButton = event.target.closest("[data-admin-tab]"); if (adminTabButton) { adminTab = adminTabButton.dataset.adminTab; $$("[data-admin-tab]").forEach(button => button.classList.toggle("active", button === adminTabButton)); loadAdmin(); }
   const removeProduct = event.target.closest("[data-delete-product]"); if (removeProduct) deleteProduct(removeProduct.dataset.deleteProduct);
 });
+$("#searchButton").addEventListener("click", () => { $("#menu").scrollIntoView({ behavior: "smooth" }); setTimeout(() => $("#menuSearch").focus(), 400); });
 document.addEventListener("change", event => {
   const orderStatus = event.target.closest("[data-status]"); if (orderStatus) updateOrderStatus(orderStatus.dataset.status, orderStatus.value);
   const availability = event.target.closest("[data-available]"); if (availability) setAvailability(availability.dataset.available, availability.checked);
   const role = event.target.closest("[data-role]"); if (role) setRole(role.dataset.role, role.value);
 });
 $("#menuSearch").addEventListener("input", renderMenu);
-$("#bagButton").addEventListener("click", () => { updateBag(); openDialog("cartDialog"); });
+$("#cartButton").addEventListener("click", () => { updateCart(); openDialog("cartDialog"); });
 $("#accountButton").addEventListener("click", openAccount);
 $("#staffButton").addEventListener("click", () => { if (session && ["admin", "super_admin"].includes(profile?.role)) { adminTab = "orders"; openDialog("adminDialog"); loadAdmin(); } else { openAccount(); showToast("Sign in with an authorized staff account."); } });
 $("#adminLink").addEventListener("click", () => { closeDialog("accountDialog"); adminTab = "orders"; $$("[data-admin-tab]").forEach(button => button.classList.toggle("active", button.dataset.adminTab === adminTab)); openDialog("adminDialog"); loadAdmin(); });
 $("#authForm").addEventListener("submit", handleAuth);
 $("#checkoutForm").addEventListener("submit", submitOrder);
-$("#checkoutForm").addEventListener("change", event => { if (event.target.name === "fulfillment") { const delivery = event.target.value === "delivery"; $("#addressField").classList.toggle("hidden", !delivery); $("#addressField input").required = delivery; updateBag(); } });
+$("#checkoutForm").addEventListener("change", event => { if (event.target.name === "fulfillment") { const delivery = event.target.value === "delivery"; $("#addressField").classList.toggle("hidden", !delivery); $("#addressField input").required = delivery; updateCart(); } });
 $("#signoutButton").addEventListener("click", async () => { await supabase.auth.signOut(); session = null; profile = null; updateAccountUI(); closeDialog("accountDialog"); showToast("You’re signed out."); });
 $("#ordersButton").addEventListener("click", loadCustomerOrders);
 $("#adminContent").addEventListener("submit", event => { if (event.target.id === "productForm") addProduct(event); });
 $("#adminContent").addEventListener("submit", event => { if (event.target.id === "settingsForm") saveSettings(event); });
 for (const dialog of $$("dialog")) dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
 
-setRestaurantInfo(); updateBag();
+setRestaurantInfo(); updateCart();
 selectHeroSlide(0);
 if (configured) {
   const { data } = await supabase.auth.getSession(); session = data.session;
